@@ -14,4 +14,5 @@ pip install discord
 pip install markovify
 ```
 
-I used DiscordCharExporter.CLI to get and store chats. Store it in the parent foler of this package if you want to use the included chat downloaders , i.e. the executable is at path `\\discord-markov\\DiscordChatExporter.CLI\\DiscordChatExporter.CLI`.
+I used DiscordCharExporter.CLI to get and store chats. Store it in the parent foler of this package if you want to use the included chat downloaders , i.e. the executable is at this path:
+```\\discord-markov\\DiscordChatExporter.CLI\\DiscordChatExporter.CLI```
