@@ -152,7 +152,7 @@ def import_users_from_list(data):
 
         if not id_in_user_list(_id):
             add_user(_name, _id)
-        if (_msg).is_valid():
+        if is_valid(_msg):
             get_user(_id).add(_msg)
 
 def create_user_models():
