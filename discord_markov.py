@@ -6,7 +6,7 @@ import random as r
 from emojilist import emotelist
 import traceback as tb
 
-filepath = '.\\chats\\exported\\'
+filepath = 'E:\\Documents\\Discord\\chat logs\\exported\\'
 filenames = ['do.csv','dont.csv','nofbipls.csv','therealus.csv','bodgeneral.csv']
 
 users = []
