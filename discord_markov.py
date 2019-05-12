@@ -6,7 +6,6 @@ import random as r
 from emojilist import emotelist
 import traceback as tb
 
-
 filepath = '.\\chats\\exported\\'
 filenames = ['do.csv','dont.csv','nofbipls.csv','therealus.csv','bodgeneral.csv']
 
@@ -18,8 +17,10 @@ DATE = 1
 MSG  = 2
 ATCH = 3
 
+MODEL_DELIM = '}{'
+
 class User:
-    def __init__(self,name,id):
+    def __init__(self, name, id):
         self.name = name
         self.id = id
         self.text = []
@@ -29,11 +30,11 @@ class User:
         self.text.append(msg_to_add)
 
     def create_normal_model(self):
-        _text = '}{'.join(self.text)
+        _text = MODEL_DELIM.join(self.text)
         self.model = CustomText(_text, state_size=2)
 
     def return_stupid_model(self):
-        text = '}{'.join(self.text)
+        text = MODEL_DELIM.join(self.text)
         return CustomText(text, state_size=5)
 
 class CustomText(markovify.Text):
@@ -126,37 +127,59 @@ def return_one_with_emote():
 def get_people():
     return [x.name for x in user_list]
 
-def __init__():
+def id_in_user_list(id):
+    for user in user_list:
+        if user.id == id:
+            return True
+    return False
+
+def add_user(name, id):
+    global user_list
+    user_list.append(User(name, id))
+
+def get_user(id):
+    for user in user_list:
+        if user.id == id:
+            return user
+    return None
+
+def import_users_from_list(data):
     global users
     global user_list
+    for line in data:
+        _entry = line.split(';')
+        _user = _entry[USER]
+        _msg = _entry[MSG]
+        _name, _id = _user.split('#')
 
-    users = []
-    user_list = []
-    messages = []
+        if not id_in_user_list(_id):
+            add_user(_name, _id)
+        # for existing_user in user_list:
+        #     if existing_user.id == _id and _id not in blacklist:
+        #         if is_valid(_msg):
+        #             existing_user.add(_msg)
+        get_user(_id).add(_msg)
 
-    for name in filenames:
-        with open(filepath + name, 'r', encoding='utf-8') as file:
-            messages.extend(file.read().split('\n')[1:-1])
-    with open('blacklist.csv', 'r') as blacklist_in:
-        blacklist = blacklist_in.read().split(',')
-    for line in messages:
-        entry = line.split(';')
-        user = entry[USER]
-        msg = entry[MSG]
-        name = user.split('#')[0]
-        id = user.split('#')[1]
-        if id not in users:
-            users.append(id)
-            user_list.append(User(name,id))
-        for x in range(len(user_list)):
-            if user_list[x].id == id and id not in blacklist:
-                #print('id')
-                if is_valid(msg):
-                    user_list[x].add(msg)
+def create_user_models():
+    global user_list
     for user in user_list:
         try:
             user.create_normal_model()
         except Exception as e:
             print('failed to create model for', user.name)
+
+def __init__():
+    global users
+    global user_list
+    users = []
+    user_list = []
+    messages = []
+    for name in filenames:
+        with open(filepath + name, 'r', encoding='utf-8') as file:
+            messages.extend(file.read().split('\n')[1:-1])
+    with open('blacklist.csv', 'r') as blacklist_in:
+        blacklist = blacklist_in.read().split(',') # make this its own method
+    import_users_from_list(messages)
+    create_user_models()
 
 __init__()
