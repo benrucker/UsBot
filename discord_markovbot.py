@@ -115,7 +115,7 @@ async def command_blacklist(message):
     if success:
         msg_out = username + ' will no longer send messages here.'
     else:
-        msg_out = username + ' could not be blacklisted.'
+        msg_out = username + ' could not be blacklisted or is already blacklisted.'
     await message.channel.send(msg_out)
 
 async def send_error(message, err_type='generic'):
