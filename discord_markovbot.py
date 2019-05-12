@@ -17,7 +17,6 @@ async def on_message(message):
     # we do not want the bot to reply to itself
     if message.author == client.user:
         return
-
     if message.content.startswith('!tts'):
         await command_toggle(message)
     elif message.content.startswith('!getstupid'):
