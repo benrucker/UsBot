@@ -24,7 +24,7 @@ async def on_message(message):
         await command_get_stupid(message)
     elif message.content.startswith('!get'):
         await command_get(message)
-    elif message.content.startswith('!debug emote'): # get one with emote
+    elif message.content.startswith('!debug emote'):
         await command_debug_emote(message)
     elif message.content.startswith('!say'):
         await command_say(message)
