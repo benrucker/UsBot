@@ -2,12 +2,13 @@
 
 import markovify
 import re
+import os
+import glob
 import random as r
 import traceback as tb
 from emojilist import emotelist
 
 filepath = 'E:\\Documents\\Discord\\chat logs\\exported\\'
-filenames = ['do.csv','dont.csv','nofbipls.csv','therealus.csv','bodgeneral.csv']
 
 users = []
 user_list = []
@@ -149,7 +150,6 @@ def import_users_from_list(data):
         _user = _entry[USER]
         _msg = _entry[MSG]
         _name, _id = _user.split('#')
-
         if not id_in_user_list(_id):
             add_user(_name, _id)
         if is_valid(_msg):
@@ -163,17 +163,19 @@ def create_user_models():
         except Exception as e:
             print('failed to create model for', user.name)
 
+def import_chat_logs():
+    messages = []
+    for filename in glob.glob(os.path.join(filepath, '*.csv')):
+        with open(filename, 'r', encoding='utf-8') as file:
+            messages.extend(file.read().split('\n')[1:-1])
+    return messages
+
 def __init__():
     global users
     global user_list
     users = []
     user_list = []
-    messages = []
-    for name in filenames:
-        with open(filepath + name, 'r', encoding='utf-8') as file:
-            messages.extend(file.read().split('\n')[1:-1])
-    with open('blacklist.csv', 'r') as blacklist_in:
-        blacklist = blacklist_in.read().split(',') # make this its own method
+    messages = import_chat_logs()
     import_users_from_list(messages)
     create_user_models()
 
