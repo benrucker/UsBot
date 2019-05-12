@@ -6,7 +6,6 @@ import sys
 import time
 
 client = discord.Client()
-channel = 497614180350951428
 
 do_tts = False
 
@@ -14,7 +13,7 @@ do_tts = False
 # add timestamps to logs
 
 @client.event
-async def on_message(message):    
+async def on_message(message):
     # we do not want the bot to reply to itself
     if message.author == client.user:
         return
@@ -39,7 +38,7 @@ async def on_message(message):
         sys.exit(0)
 
 async def command_get(message):
-    channel_to_send = message.channel        
+    channel_to_send = message.channel
     if ' ' in message.content:  # get name
         await command_get_specified(message, name=name_from_command(message))
     else:                       # get a few random
@@ -106,7 +105,7 @@ async def command_list(message):
 
 async def command_partyrockers(message):
     await message.channel.send('se tonight')
-    
+
 async def command_blacklist(message):
     if not message.author.id == 173978157349601283:
         await send_error(message, err_type='perms')
@@ -118,7 +117,7 @@ async def command_blacklist(message):
     else:
         msg_out = username + ' could not be blacklisted.'
     await message.channel.send(msg_out)
-    
+
 async def send_error(message, err_type='generic'):
     error = 'Error: '
     if err_type == 'generic':
@@ -156,4 +155,7 @@ async def on_ready():
     print(client.user.id)
     print('------')
 
-client.run('NDk3NjAyNjg3MjExMTQzMTg5.DphniA.hhU8V3D9rbc-aa_eQVVu32QgJWk')
+file = open('secret.txt')
+secret = file.read()
+file.close()
+client.run(secret)
