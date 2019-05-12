@@ -144,8 +144,6 @@ def get_user(id):
     return None
 
 def import_users_from_list(data):
-    global users
-    global user_list
     for line in data:
         _entry = line.split(';')
         _user = _entry[USER]
@@ -154,11 +152,8 @@ def import_users_from_list(data):
 
         if not id_in_user_list(_id):
             add_user(_name, _id)
-        # for existing_user in user_list:
-        #     if existing_user.id == _id and _id not in blacklist:
-        #         if is_valid(_msg):
-        #             existing_user.add(_msg)
-        get_user(_id).add(_msg)
+        if (_msg).is_valid():
+            get_user(_id).add(_msg)
 
 def create_user_models():
     global user_list
