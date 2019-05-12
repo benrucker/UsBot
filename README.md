@@ -1,5 +1,5 @@
 # discord-markov
-This program utilizes markopvify to make new sentences based on discord users.
+This program utilizes markovify to make new sentences based on discord users.
 
 
 # Information
