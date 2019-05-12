@@ -3,8 +3,8 @@
 import markovify
 import re
 import random as r
-from emojilist import emotelist
 import traceback as tb
+from emojilist import emotelist
 
 filepath = 'E:\\Documents\\Discord\\chat logs\\exported\\'
 filenames = ['do.csv','dont.csv','nofbipls.csv','therealus.csv','bodgeneral.csv']
@@ -39,7 +39,7 @@ class User:
 
 class CustomText(markovify.Text):
     def sentence_split(self, text):
-        return re.split(r'\s*}{\s*', text)
+        return re.split(r'\s*' + MODEL_DELIM + r'\s*', text)
 
 def is_valid(msg):
     invalidators = ['Joined the server.','Pinned a message.',':  ','!get']
