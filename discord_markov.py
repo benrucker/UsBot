@@ -26,21 +26,19 @@ class User:
         self.id = id
         self.text = []
         self.model = None
+        self.stupid = None
 
-    def add(self,msg_to_add):
+    def add(self, msg_to_add):
         self.text.append(msg_to_add)
 
-    def create_normal_model(self):
+    def create_models(self):
         _text = MODEL_DELIM.join(self.text)
         self.model = CustomText(_text, state_size=2)
-
-    def return_stupid_model(self):
-        text = MODEL_DELIM.join(self.text)
-        return CustomText(text, state_size=5)
+        self.stupid = CustomText(_text, state_size=5)
 
 class CustomText(markovify.Text):
     def sentence_split(self, text):
-        return re.split(r'\s*' + MODEL_DELIM + r'\s*', text)
+        return re.split(fr'\s*{MODEL_DELIM}\s*', text)
 
 def is_valid(msg):
     invalidators = ['Joined the server.','Pinned a message.',':  ','!get']
@@ -92,7 +90,7 @@ def emojify(sentence):
         return sentence
 
 def generate_sentence(person, num_tries, stupid):
-    model = person.return_stupid_model() if stupid else person.model
+    model = person.stupid if stupid else person.model
     print('state size =', model.state_size)
     sentence = model.make_sentence(tries=num_tries)
     if sentence is None:
@@ -159,7 +157,7 @@ def create_user_models():
     global user_list
     for user in user_list:
         try:
-            user.create_normal_model()
+            user.create_models()
         except Exception as e:
             print('failed to create model for', user.name)
 
