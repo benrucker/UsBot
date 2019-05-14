@@ -14,7 +14,6 @@ do_tts = False
 
 @client.event
 async def on_message(message):
-    # we do not want the bot to reply to itself
     if message.author == client.user:
         return
     if message.content.startswith('!tts'):
@@ -43,13 +42,13 @@ async def command_get(message):
     else:                       # get a few random
         await command_get_unspecified(message)
 
-async def command_get_specified(message, name, stupid=False):
+async def command_get_specified(message, name, num_tries=500, stupid=False):
     msg = ''
     async with message.channel.typing():
         if not name:
             msg = 'Error: specified user does not exist'
         else:
-            msg = generate_message(name, num_tries=500, stupid=stupid)
+            msg = generate_message(name, num_tries=num_tries, stupid=stupid)
     await message.channel.send(msg, tts=do_tts)
 
 async def command_get_unspecified(message):
@@ -68,7 +67,7 @@ async def command_get_unspecified(message):
             break
 
 async def command_get_stupid(message):
-    await command_get_specified(message, name=name_from_command(message), stupid=True)
+    await command_get_specified(message, name=name_from_command(message), num_tries=100000, stupid=True)
 
 async def command_debug_emote(message):
     progress_text = await message.channel.send('This might take a while.')
@@ -126,7 +125,7 @@ async def send_error(message, err_type='generic'):
     await message.channel.send(error)
 
 def format_message(msg_data):
-    return '.\n' + msg_data[0] + msg_data[1]
+    return ''.join(msg_data)
 
 def name_from_command(message):
     return discord_markov.get_full_name(' '.join(message.content.split(' ')[1:]))
