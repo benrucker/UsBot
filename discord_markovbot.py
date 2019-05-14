@@ -6,11 +6,7 @@ import sys
 import time
 
 client = discord.Client()
-
 do_tts = False
-
-# TODO:
-# add timestamps to logs
 
 @client.event
 async def on_message(message):
