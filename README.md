@@ -17,6 +17,8 @@ pip install markovify
 
 I used DiscordCharExporter.CLI to get and store chats to csv files. Change the variable `filepath` in `discord_markov.py` to the filepath that contains your chat logs.
 
+Store your bot's secret key in a text file named `secret.txt` in the base folder.
+
 ## Commands
 All commands are prefixed with `!`
 
