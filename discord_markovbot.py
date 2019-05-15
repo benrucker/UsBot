@@ -106,7 +106,7 @@ async def command_blacklist(message):
     if not message.author.id == 173978157349601283:
         await send_error(message, err_type='perms')
     username = name_from_command(message)
-    success = discord_markov.blacklist_user(username)
+    success = discord_markov.add_user_to_blacklist(username)
     msg_out = ''
     if success:
         msg_out = username + ' will no longer send messages here.'
@@ -141,7 +141,7 @@ def generate_message(name, num_tries=250, stupid=False):
 def get_random_name(names):
     while True:
         name = r.choice(discord_markov.get_people())
-        if not discord_markov.user_blacklisted(discord_markov.user_from_name(name)):
+        if not discord_markov.user_is_blacklisted(discord_markov.user_from_name(name)):
             if not name in names:
                 return name
 
