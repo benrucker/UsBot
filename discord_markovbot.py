@@ -142,7 +142,7 @@ def get_random_name(names):
     while True:
         name = r.choice(discord_markov.get_people())
         if not discord_markov.user_blacklisted(discord_markov.user_from_name(name)):
-            if not name in names
+            if not name in names:
                 return name
 
 @client.event
