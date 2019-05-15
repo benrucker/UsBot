@@ -55,12 +55,15 @@ def user_from_name(name):
     return None
 
 def user_is_blacklisted(user):
-    with open('blacklist.csv', 'r+') as file:
-        return user.id in file.read().split(',')
+    try:
+        with open('blacklist.csv', 'r') as file:
+            return user.id in file.read().split(',')
+    except:
+        return False
 
 def user_blacklist(user):
     with open('blacklist.csv', 'a+') as file:
-        file.write(',' + user.id)
+        file.write(user.id + ',')
 
 def get_full_name(name):
     user = user_from_name(name)
