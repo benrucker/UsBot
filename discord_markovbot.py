@@ -48,10 +48,12 @@ async def command_get_specified(message, name, num_tries=500, stupid=False):
     await message.channel.send(msg, tts=do_tts)
 
 async def command_get_unspecified(message):
+    names = []
     for x in range(int(r.random() * 3 + 2)):
         while True:
             with message.channel.typing():
-                name = get_random_name()
+                name = get_random_name(names)
+                names.extend(name)
                 msg = generate_message(name, num_tries=250)
                 if msg.startswith('Error'):
                     print("failed, continuing")
@@ -136,11 +138,12 @@ def generate_message(name, num_tries=250, stupid=False):
         msg = 'Error: cannot create message from ' + name
     return msg
 
-def get_random_name():
+def get_random_name(names):
     while True:
         name = r.choice(discord_markov.get_people())
         if not discord_markov.user_blacklisted(discord_markov.user_from_name(name)):
-            return name
+            if not name in names
+                return name
 
 @client.event
 async def on_ready():
