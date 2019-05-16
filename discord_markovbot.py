@@ -11,6 +11,7 @@ do_tts = False
 
 @client.event
 async def on_message(message):
+    """Call the necessary method upon user command."""
     if message.author == client.user:
         return
     if message.content.startswith('!tts'):
@@ -34,6 +35,7 @@ async def on_message(message):
 
 
 async def command_get(message):
+    """Send a message based on one or a few users."""
     if ' ' in message.content:  # get name
         await command_get_specified(message, name=name_from_command(message))
     else:                       # get a few random
@@ -41,6 +43,7 @@ async def command_get(message):
 
 
 async def command_get_specified(message, name, num_tries=500, stupid=False):
+    """Send a message based on a specific user."""
     msg = ''
     async with message.channel.typing():
         if not name:
@@ -51,6 +54,10 @@ async def command_get_specified(message, name, num_tries=500, stupid=False):
 
 
 async def command_get_unspecified(message):
+    """Send multiple messages based on randomly chosen users.
+
+    Will not send a message based on a user more than once in one invocation.
+    """
     names = []
     for x in range(int(r.random() * 3 + 2)):
         while True:
@@ -69,10 +76,13 @@ async def command_get_unspecified(message):
 
 
 async def command_get_stupid(message):
-    await command_get_specified(message, name=name_from_command(message), num_tries=100000, stupid=True)
+    """Send a message based on a specific user with a different text model."""
+    _name = name_from_command(message)
+    await command_get_specified(message, name=_name, num_tries=100000, stupid=True)
 
 
 async def command_debug_emote(message):
+    """Send a message that contains an emote."""
     progress_text = await message.channel.send('This might take a while.')
     with message.channel.typing():
         msg_data = discord_markov.return_one_with_emote()
@@ -83,9 +93,10 @@ async def command_debug_emote(message):
 
 
 async def command_say(message):
+    """Send a message containing just the user's input parameters."""
     try:
         print(message.content)
-        msg = message.content[message.content.index(' ') + 1:]
+        msg = message.content.split(' ')[1:]
         msg = discord_markov.emojify(msg)
         print(msg)
         await message.channel.send(msg)
@@ -96,6 +107,7 @@ async def command_say(message):
 
 
 async def command_toggle(message):
+    """Toggle tts on or off."""
     global do_tts
     do_tts = not do_tts
     await message.delete()
@@ -103,18 +115,22 @@ async def command_toggle(message):
 
 
 async def command_list(message):
+    """Send to the user a list of all valid usernames."""
     list = '\n'.join(discord_markov.get_people())
     msg = '```' + list + '```'
     await message.author.send(msg)
 
 
 async def command_partyrockers(message):
+    """Meme."""
     await message.channel.send('se tonight')
 
 
 async def command_blacklist(message):
+    """Blacklist a user."""
     if not message.author.id == 173978157349601283:
         await send_error(message, err_type='perms')
+
     username = name_from_command(message)
     success = discord_markov.add_user_to_blacklist(username)
     msg_out = ''
@@ -126,6 +142,7 @@ async def command_blacklist(message):
 
 
 async def send_error(message, err_type='generic'):
+    """User-facing error handler."""
     error = 'Error: '
     if err_type == 'generic':
         error += '¯\\_(ツ)_/¯'
@@ -135,14 +152,17 @@ async def send_error(message, err_type='generic'):
 
 
 def format_message(msg_data):
+    """Format message data; return string."""
     return ''.join(msg_data)
 
 
 def name_from_command(message):
+    """Return a valid username given a username fragment in a command."""
     return discord_markov.get_full_name(' '.join(message.content.split(' ')[1:]))
 
 
 def generate_message(name, num_tries=250, stupid=False):
+    """Return a new sentence based on user name."""
     msg = discord_markov.return_one(name=name, num_tries=num_tries, stupid=stupid)
     if msg is not None:
         print('succeeded')
@@ -154,6 +174,7 @@ def generate_message(name, num_tries=250, stupid=False):
 
 
 def get_random_name(names):
+    """Return a random full username that isn't blacklisted."""
     while True:
         name = r.choice(discord_markov.get_people())
         if not discord_markov.user_is_blacklisted(discord_markov.user_from_name(name)):
@@ -163,6 +184,7 @@ def get_random_name(names):
 
 @client.event
 async def on_ready():
+    """Print when ready."""
     print('Logged in as')
     print(client.user.name)
     print(client.user.id)
