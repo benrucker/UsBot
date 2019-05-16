@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 import markovify
 import re
 import os
