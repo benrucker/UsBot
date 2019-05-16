@@ -42,7 +42,11 @@ class CustomText(markovify.Text):
 
 def is_valid(msg):
     invalidators = ['Joined the server.','Pinned a message.',':  ','!get']
+<<<<<<< HEAD
     return True not in [test in msg for test in invalidators]
+=======
+    return True in [test in msg for test in invalidators]
+>>>>>>> 3984d907b361e5d0f7db6732bcfc3e0909d3db15
 
 def user_from_name(name):
     for user in user_list:
