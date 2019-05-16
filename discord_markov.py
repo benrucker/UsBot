@@ -42,10 +42,7 @@ class CustomText(markovify.Text):
 
 def is_valid(msg):
     invalidators = ['Joined the server.','Pinned a message.',':  ','!get']
-    for str in invalidators:
-        if str in msg:
-            return False
-    return True
+    return True not in [test in msg for test in invalidators]
 
 def user_from_name(name):
     for user in user_list:
