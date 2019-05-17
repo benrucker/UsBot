@@ -14,6 +14,7 @@ async def on_message(message):
     """Call the necessary method upon user command."""
     if message.author == client.user:
         return
+
     if message.content.startswith('!tts'):
         await command_toggle(message)
     elif message.content.startswith('!getstupid'):
