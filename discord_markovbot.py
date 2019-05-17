@@ -64,6 +64,8 @@ async def command_get_unspecified(message):
         while True:
             with message.channel.typing():
                 name = get_random_name(names)
+                if name in names:
+                    continue
                 names.extend(name)
                 msg = generate_message(name, num_tries=250)
                 if msg.startswith('Error'):
