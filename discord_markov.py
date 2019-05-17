@@ -158,7 +158,7 @@ def process_sentence(person, sentence):
 
 
 def return_one_with_emote():
-    """Tries to return a sentence that includes a formatted emote."""
+    """Try to return a sentence that includes a formatted emote."""
     while True:
         person = r.choice(user_list)
         message = return_one(person, 250)
@@ -207,13 +207,13 @@ def import_users_from_list(data):
 
 
 def create_user_models():
-    """Creates text models for each existing user."""
+    """Create text models for each existing user."""
     global user_list
     for user in user_list:
         try:
             user.create_models()
         except Exception as e:
-            print(e)
+            # print(e)
             print('failed to create model for', user.name)
 
 
