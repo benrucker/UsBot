@@ -50,7 +50,7 @@ emotelist = dict([
 (':partyparrot:', '<a:partyparrot:433777127989444620>'),
 (':cursedcostanza:', '<a:cursedcostanza:457372290099707914>'),
 (':ben_neutral:', '<:ben_neutral:537128292268900382>'),
-(':Bruckers_cumming:', '<:Bruckers_cumming:537128292268900382>'),
+(':Bruckers_Cumming:', '<:Bruckers_cumming:537128292268900382>'),
 (':thatsmyfetish:', '<:thatsmyfetish:573708781771423766>'),
 (':monkaS:', '<:monkaS:539182608563830797>'), # start of new server
 (':ethan2:', '<:ethan2:571833581547028510>'), #h3h3
