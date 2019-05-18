@@ -4,12 +4,14 @@ import os
 import random as r
 import traceback as tb
 from glob import glob
-from emojilist import emotelist
+#from emojilist import emotelist
 
 filepath = 'E:\\Documents\\Discord\\chat logs\\exported\\'
 
 users = []
 user_list = []
+
+emotes = []
 
 USER = 0
 DATE = 1
@@ -104,7 +106,7 @@ def add_user_to_blacklist(name):
 
 def has_emojis(sentence):
     """Return True if the given sentence contains a <:name:id> formatted emote."""
-    return r'<:\s*:\s*>'
+    return r'<:\s*:\s*>' in sentence
 
 
 def replace_emotes(sentence):
@@ -113,8 +115,10 @@ def replace_emotes(sentence):
     Emotes in input are in form :emotename: and replaced with form
     <:emotename:id_number>.
     """
-    for emote in emotelist.keys():
-        sentence = sentence.replace(emote, emotelist[emote])
+    for emote in emotes:
+        emote_in_text = ':' + emote.name + ':'
+        emote_replace = '<:' + emote.name + ':' + str(emote.id) + '>'
+    sentence = sentence.replace(emote_in_text, emote_replace)
     return sentence
 
 
@@ -161,7 +165,7 @@ def return_one_with_emote():
     """Try to return a sentence that includes a formatted emote."""
     while True:
         person = r.choice(user_list)
-        message = return_one(person, 250)
+        message = return_one(person.name, 250)
         if message and has_emojis(message[1]):
             return message
 
@@ -224,6 +228,12 @@ def import_chat_logs():
         with open(filename, 'r', encoding='utf-8') as file:
             messages.extend(file.read().split('\n')[1:-1])
     return messages
+
+
+def init_emotes(_emotes):
+    """Set the list emotes given an input list."""
+    global emotes
+    emotes = _emotes
 
 
 def __init__():

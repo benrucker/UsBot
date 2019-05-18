@@ -87,7 +87,7 @@ async def command_get_stupid(message):
 async def command_debug_emote(message):
     """Send a message that contains an emote."""
     progress_text = await message.channel.send('This might take a while.')
-    with message.channel.typing():
+    async with message.channel.typing():
         msg_data = discord_markov.return_one_with_emote()
         print(msg_data)
         msg = format_message(msg_data)
@@ -99,7 +99,7 @@ async def command_say(message):
     """Send a message containing just the user's input parameters."""
     try:
         print(message.content)
-        msg = message.content.split(' ')[1:]
+        msg = ' '.join(message.content.split(' ')[1:])
         msg = discord_markov.emojify(msg)
         print(msg)
         await message.channel.send(msg)
@@ -192,6 +192,7 @@ async def on_ready():
     print(client.user.name)
     print(client.user.id)
     print('------')
+    discord_markov.init_emotes(client.emojis)
 
 
 file = open('secret.txt')
