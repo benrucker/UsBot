@@ -118,7 +118,7 @@ def replace_emotes(sentence):
     for emote in emotes:
         emote_in_text = ':' + emote.name + ':'
         emote_replace = '<:' + emote.name + ':' + str(emote.id) + '>'
-    sentence = sentence.replace(emote_in_text, emote_replace)
+        sentence = sentence.replace(emote_in_text, emote_replace)
     return sentence
 
 
