@@ -63,10 +63,10 @@ async def command_get_unspecified(message):
     for x in range(int(r.random() * 3 + 2)):
         while True:
             with message.channel.typing():
-                name = get_random_name(names)
+                name = get_random_name()
                 if name in names:
                     continue
-                names.extend(name)
+                names.append(name)
                 msg = generate_message(name, num_tries=250)
                 if msg.startswith('Error'):
                     print("failed, continuing")
@@ -176,13 +176,12 @@ def generate_message(name, num_tries=250, stupid=False):
     return msg
 
 
-def get_random_name(names):
+def get_random_name():
     """Return a random full username that isn't blacklisted."""
     while True:
         name = r.choice(discord_markov.get_people())
         if not discord_markov.user_is_blacklisted(discord_markov.user_from_name(name)):
-            if name not in names:
-                return name
+            return name
 
 
 @client.event
