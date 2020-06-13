@@ -58,7 +58,9 @@ class CustomText(markovify.Text):
 def is_valid(msg):
     """Return True if the given message is valid."""
     invalidators = ['Joined the server.', 'Pinned a message.', ':  ', '!get']
-    return True not in [test in msg for test in invalidators]
+    prefixes = ['!', '?', '$', '[]']
+    return True not in ([test in msg for test in invalidators]
+                      + [msg.startswith(prefix) for prefix in prefixes])
 
 
 def user_from_name(name):
@@ -117,7 +119,7 @@ def replace_emotes(sentence):
     """
     for emote in emotes:
         emote_in_text = ':' + emote.name + ':'
-        emote_replace = '<:' + emote.name + ':' + str(emote.id) + '>'
+        emote_replace = ('<a:' if emote.animated else '<:' ) + emote.name + ':' + str(emote.id) + '>'
         sentence = sentence.replace(emote_in_text, emote_replace)
     return sentence
 
@@ -200,7 +202,10 @@ def get_user(id):
 def import_users_from_list(data):
     """Given a list of Discord message data, create User objects with relevant information."""
     for line in data:
+        #print('+'+line)
         _entry = line.split(';')
+        if '**Discord HTTPException**' in line or len(_entry) < 4:
+            continue # hack to keep NotSoBot from breaking this code
         _user = _entry[USER]
         _msg = _entry[MSG]
         _name, _id = _user.split('#')
