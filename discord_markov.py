@@ -13,10 +13,12 @@ user_list = []
 
 emotes = []
 
-USER = 0
-DATE = 1
-MSG  = 2
-ATCH = 3
+ID   = 0
+USER = 1
+DATE = 2
+MSG  = 3
+ATCH = 4
+RCTN = 5
 
 MODEL_DELIM = '}{'
 
@@ -57,7 +59,7 @@ class CustomText(markovify.Text):
 
 def is_valid(msg):
     """Return True if the given message is valid."""
-    invalidators = ['Joined the server.', 'Pinned a message.', ':  ', '!get']
+    invalidators = ['Joined the server.', 'Pinned a message.', '!get']
     prefixes = ['!', '?', '$', '[]']
     return True not in ([test in msg for test in invalidators]
                       + [msg.startswith(prefix) for prefix in prefixes])
@@ -203,17 +205,18 @@ def import_users_from_list(data):
     """Given a list of Discord message data, create User objects with relevant information."""
     for line in data:
         #print('+'+line)
-        _entry = line.split(';')
+        _entry = line.split('","')
         if '**Discord HTTPException**' in line or len(_entry) < 4:
             continue # hack to keep NotSoBot from breaking this code
+        _id = _entry[ID].strip('"')
         _user = _entry[USER]
+        _name, _ = _user.split('#')
         _msg = _entry[MSG]
-        _name, _id = _user.split('#')
+        # _reactions = _entry[RCTN].strip('"') # throws OOB
         if not id_in_user_list(_id):
             add_user(_name, _id)
         if is_valid(_msg):
             get_user(_id).add(_msg)
-
 
 def create_user_models():
     """Create text models for each existing user."""
@@ -226,13 +229,46 @@ def create_user_models():
             print('failed to create model for', user.name)
 
 
+def invalid_file(filename):
+    baddies = ['spam', 'dev', 'lowlights', 'the-real-us']
+    return any([x in filename for x in baddies])
+
+
 def import_chat_logs():
     """Transform external message data into a list."""
     messages = []
     for filename in glob(os.path.join(filepath, '*.csv')):
+        if invalid_file(filename):
+            continue
         with open(filename, 'r', encoding='utf-8') as file:
             messages.extend(file.read().split('\n')[1:-1])
     return messages
+
+
+def import_therealus():
+    messages = []
+    for filename in glob(os.path.join(filepath, '*the-real-us*.csv')):
+        with open(filename, 'r', encoding='utf-8') as file:
+            entries = file.read().split('\n')[1:-1]
+            messages.extend([e for e in entries if '"497602687211143189",' in e])
+    return messages
+
+
+def import_usbot_user():
+    for line in import_therealus():
+        #print('+'+line)
+        _entry = line.split('","')
+        if '**Discord HTTPException**' in line or len(_entry) < 4:
+            continue # hack to keep NotSoBot from breaking this code
+        _id = _entry[ID].strip('"')
+        _user = _entry[USER]
+        _name, _ = _user.split('#')
+        _msg = _entry[MSG]
+        # _reactions = _entry[RCTN].strip('"') # throws OOB
+        if not id_in_user_list(_id):
+            add_user(_name, _id)
+        if is_valid(_msg):
+            get_user(_id).add(_msg)
 
 
 def init_emotes(_emotes):
@@ -248,7 +284,14 @@ def __init__():
     user_list = []
     messages = import_chat_logs()
     import_users_from_list(messages)
+    import_usbot_user()
     create_user_models()
 
 
 __init__()
+
+if __name__ == '__main__':
+    for user in user_list:
+        if user_is_blacklisted(user):
+            continue
+        print(return_one(name=user.name))
