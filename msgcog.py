@@ -37,6 +37,11 @@ class MsgCog(commands.Cog):
         self.bot.reload_extension(ext)
         await ctx.send('Reloadception complete.')
 
+    @commands.is_owner()
+    @commands.command()
+    async def reset(self, ctx):
+        markov.__init__()
+
     @commands.command()
     async def tts(self, ctx):
         self.do_tts = not self.do_tts
