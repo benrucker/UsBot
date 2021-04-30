@@ -7,6 +7,7 @@ from typing import Optional
 import discord
 from discord.ext import commands
 
+from dlogger import dlogger
 
 class UsBot(commands.Bot):
     """Discord-interacting UsBot class."""
@@ -24,4 +25,5 @@ if __name__ == '__main__':
     file.close()
     bot.load_extension('msgcog')
     bot.load_extension('setupcog')
+    dlogger.setup(bot)
     bot.run(secret)
