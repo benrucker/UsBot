@@ -1,1 +1,1 @@
-cmd /k py discord_markovbot.py
+cmd /k python discord_markovbot.py
