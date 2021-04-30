@@ -1,3 +1,4 @@
+import datetime
 import random as r
 import sys
 import time
@@ -5,19 +6,35 @@ import traceback as tb
 from typing import Optional
 
 import discord
-from discord.ext import commands
+from discord.ext import commands, tasks
 
 import markov
+from dlogger import dlogger
 
 def setup(bot):
     bot.add_cog(MsgCog(bot))
+
+def get_next_monday():
+    today = datetime.date.today()
+    next_monday = today + datetime.timedelta(days=-today.weekday(), weeks=1)
+    print(next_monday)
+    return next_monday
 
 class MsgCog(commands.Cog):
 
     def __init__(self, bot):
         self.do_tts = False
         self.bot = bot
+        # self.reload_task.next_iteration = get_next_monday()
+        self.reload_task.start()
         pass
+
+    def cog_unload(self):
+        self.reload_task.cancel()
+
+    @tasks.loop(hours=1)
+    async def reload_task(self):
+        print('1 hour later')
 
     @commands.is_owner()
     @commands.command()
