@@ -23,4 +23,5 @@ if __name__ == '__main__':
     secret = file.read()
     file.close()
     bot.load_extension('msgcog')
+    bot.load_extension('setupcog')
     bot.run(secret)
