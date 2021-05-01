@@ -37,7 +37,10 @@ class MsgCog(commands.Cog):
 
     @tasks.loop(hours=1)
     async def reload_task(self):
+        self.bot.updating = True
         print('1 hour later')
+        # update
+        self.bot.updating = False
 
     @commands.is_owner()
     @commands.command()
