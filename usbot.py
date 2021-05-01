@@ -31,7 +31,3 @@ if __name__ == '__main__':
     bot.load_extension('setupcog')
     dlogger.setup(bot)
     bot.run(secret)
-
-    @bot.check
-    def block_while_updating(ctx):
-        return bot.updating == False

@@ -32,6 +32,9 @@ class MsgCog(commands.Cog):
     def cog_unload(self):
         self.reload_task.cancel()
 
+    def cog_check(self, ctx):
+        return self.bot.updating == False
+
     @tasks.loop(hours=1)
     async def reload_task(self):
         print('1 hour later')
