@@ -78,7 +78,8 @@ def user_is_blacklisted(user, gid):
     """Return True if the given User is blacklisted."""
     try:
         with open(os.path.join(basepath, str(gid), 'blacklist.csv'), 'r') as file:
-            return user.id in file.read().split(',')
+            print('checking if', user.name + ':' + user.id, 'is in blacklist:')
+            return str(user.id) in file.read().split(',')
     except Exception as e:
         print('exception reading blacklist')
         print(e)
