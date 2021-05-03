@@ -11,6 +11,8 @@ from discord.ext import commands, tasks
 import markov
 from dlogger import dlogger
 
+ATTEMPTS = 50
+
 def setup(bot):
     bot.add_cog(MsgCog(bot))
 
@@ -51,7 +53,7 @@ class MsgCog(commands.Cog):
     @commands.is_owner()
     @commands.command()
     async def reset(self, ctx):
-        markov.init()
+        await markov.init()
 
     @commands.command()
     async def tts(self, ctx):
@@ -117,7 +119,7 @@ class MsgCog(commands.Cog):
         if not name:
             await self.command_get_unspecified(ctx, ctx.guild.id)
         else:
-            await self.command_get_specified(ctx, ctx.guild.id, name)
+            await self.command_get_specified(ctx, name)
 
     async def command_get_specified(self, ctx: commands.Context, name, num_tries=500, stupid=False):
         """Send a message based on a specific user."""
@@ -135,8 +137,9 @@ class MsgCog(commands.Cog):
         Will not send a message based on a user more than once in one invocation.
         """
         names = []
+        sent_one = False
         for x in range(int(r.random() * 3 + 2)):
-            while True:
+            for x in range(ATTEMPTS):
                 with ctx.channel.typing():
                     name = self.get_random_name(gid)
                     if name in names:
@@ -150,7 +153,11 @@ class MsgCog(commands.Cog):
                         print("succeeded")
                         print(msg)
                 await ctx.channel.send(msg, tts=self.do_tts)
+                sent_one = True
                 break
+        
+        if not sent_one:
+            await ctx.send("Looks like there aren't enough messages for me to generate new ones from. Try again later!")
 
     @commands.is_owner()
     @commands.command()
@@ -179,7 +186,6 @@ class MsgCog(commands.Cog):
     def get_random_name(self, gid):
         """Return a random full username that isn't blacklisted."""
         while True:
-            print(markov.get_people(gid))
             name = r.choice(markov.get_people(gid))
             if not markov.user_is_blacklisted(markov.user_from_name(name, gid), gid):
                 return name

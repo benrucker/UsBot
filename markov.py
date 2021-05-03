@@ -85,7 +85,7 @@ def user_is_blacklisted(user, gid):
 
 def user_blacklist(user, gid):
     """Add a user to the blacklist."""
-    with open(os.path.join(basepath, gid, 'blacklist.csv'), 'a+') as file:
+    with open(os.path.join(basepath, str(gid), 'blacklist.csv'), 'a+') as file:
         file.write(user.id + ',')
 
 
@@ -150,12 +150,12 @@ def generate_sentence(person, num_tries, stupid):
 def return_one(gid, name='', num_tries=500,  stupid=False):
     """Return a nicely-formatted sentence for a given username."""
     try:
-        print('\n\nTrying to return one sentence from', name)
+        print('\nTrying to return one sentence from', name)
         person = user_from_name(name, gid)
         sentence = generate_sentence(person, num_tries, stupid)
         return process_sentence(person, sentence)
     except Exception as e:
-        print('failed to create sentence for ' + person.name)
+        print('failed to create sentence for ' + name)
         print(e)
         return None
 
@@ -176,7 +176,6 @@ def return_one_with_emote(gid):
 
 def get_people(gid):
     """Return a list with all stored User object names."""
-    # print(user_list[gid])
     return [x.name for x in user_list[gid]]
 
 
@@ -190,15 +189,7 @@ def id_in_user_list(id, gid):
 
 def add_user(name, id, gid):
     """Add a new user object to the list."""
-    print('adding id', id, 'to userlist')
-    # print(user_list)
-    # if gid not in user_list.keys():
-    #     user_list[gid] = list()
-    #     print('gid wasn\'t in keys')
-    # user_list[gid] = list()
-    # print(gid, user_list)
     user_list[gid].append(User(name, id))
-    # print
 
 
 def get_user(id, gid):
@@ -232,7 +223,6 @@ def create_user_models(gid):
         try:
             user.create_models()
         except Exception as e:
-            # print(e)
             print('failed to create model for', user.name)
 
 
@@ -246,14 +236,10 @@ def import_chat_logs(gid):
     """Transform external message data into a list."""
     messages = []
     for filename in glob(os.path.join(basepath, str(gid), '*.csv')):
-        # print(filename)
         if invalid_file(filename):
-            # print('INVALID FILENAME:', filename)
             continue
-        # print('valid filename:', filename)
         with open(filename, 'r', encoding='utf-8') as file:
             messages.extend(file.read().split('\n')[1:-1])
-    # print('messages:', messages)
     return messages
 
 
@@ -283,7 +269,7 @@ def import_usbot_user(gid):
             get_user(_id, gid).add(_msg)
 
 
-def init(gids):
+async def init(gids):
     print(gids)
     for gid in gids:
         print('updating gid', gid)
