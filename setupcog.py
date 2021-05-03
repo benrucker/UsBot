@@ -72,4 +72,4 @@ class SetupCog(commands.Cog):
 
 
     def begin_download(self, guild):
-        self.bot.get_cog('LogCog').log(guild)
+        self.bot.get_cog('LogCog').log(guild.id)
