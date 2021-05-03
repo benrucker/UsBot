@@ -6,7 +6,7 @@ import traceback as tb
 from glob import glob
 #from emojilist import emotelist
 
-basepath = 'E:\\Documents\\Discord\\dev branches\\discord-markov\\dlogger\\exported'
+basepath = '/home/chamber/github/discord-markov/dlogger/exported'
 
 users = dict()
 user_list = dict()
