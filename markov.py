@@ -207,18 +207,24 @@ def import_users_from_list(data, gid):
     """Given a list of Discord message data, create User objects with relevant information."""
     for line in data:
         # print('+'+line)
-        _entry = line.split('","')
-        if '**Discord HTTPException**' in line or len(_entry) < 4:
-            continue # hack to keep NotSoBot from breaking this code
-        _id = _entry[ID].strip('"')
-        _user = _entry[USER]
-        _name, _ = _user.split('#', maxsplit=1)
-        _msg = _entry[MSG]
-        # _reactions = _entry[RCTN].strip('"') # throws OOB
-        if not id_in_user_list(_id, gid):
-            add_user(_name, _id, gid)
-        if is_valid(_msg):
-            get_user(_id, gid).add(_msg)
+        _user = None
+        try:
+            _entry = line.split('","')
+            if '**Discord HTTPException**' in line or len(_entry) < 4:
+                continue # hack to keep NotSoBot from breaking this code
+            _id = _entry[ID].strip('"')
+            _user = _entry[USER]
+            _name, _ = _user.split('#', maxsplit=1)
+            _msg = _entry[MSG]
+            # _reactions = _entry[RCTN].strip('"') # throws OOB
+            if not id_in_user_list(_id, gid):
+                add_user(_name, _id, gid)
+            if is_valid(_msg):
+                get_user(_id, gid).add(_msg)
+        except Exception as e:
+            print(e)
+            print('line:', line)
+            print('user:', _user)
 
 def create_user_models(gid):
     """Create text models for each existing user."""
