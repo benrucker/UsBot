@@ -214,6 +214,11 @@ class MsgCog(commands.Cog):
 
     @commands.is_owner()
     @commands.command()
+    async def remodel(self, ctx):
+        markov.init([ctx.guild.id])
+
+    @commands.is_owner()
+    @commands.command()
     async def die(self, ctx):
         sys.exit(0)
 
