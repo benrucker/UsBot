@@ -215,7 +215,7 @@ class MsgCog(commands.Cog):
     @commands.is_owner()
     @commands.command()
     async def remodel(self, ctx):
-        await markov.init([ctx.guild.id])
+        await markov.init([173840048343482368])
 
     @commands.is_owner()
     @commands.command()
