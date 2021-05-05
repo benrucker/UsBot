@@ -210,7 +210,7 @@ class MsgCog(commands.Cog):
 
         print(
             f'unblocked {len(old_ids) - len(out_ids)} channels after given {len(ids)} as input')
-        await ctx.send('Understood! Those channels have been unblocked. Give me a second to refresh the models.')
+        await ctx.send('Understood! Those channels have been unblocked.')
 
     @commands.is_owner()
     @commands.command()
