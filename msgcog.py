@@ -162,8 +162,12 @@ class MsgCog(commands.Cog):
 
     @commands.command()
     async def blockchannel(self, ctx, channels: commands.Greedy[discord.TextChannel]):
+        path = os.path.join(markov.basepath, str(ctx.guild.id), 'blockedchannels.txt')
         ids = set([c.id for c in channels])
-        with open(os.path.join(markov.basepath, str(ctx.guild.id), 'blockedchannels.txt'), 'r+') as f:
+
+        if not os.path.exists(path):
+            with open(path, 'w'): pass
+        with open(path, 'r+') as f:
             old_ids = set(f.read().split('\n'))
             out_ids = ids | old_ids
             f.write('\n'.join(out_ids))
@@ -173,8 +177,12 @@ class MsgCog(commands.Cog):
 
     @commands.command()
     async def unblockchannel(self, ctx, channels: commands.Greedy[discord.TextChannel]):
+        path = os.path.join(markov.basepath, str(ctx.guild.id), 'blockedchannels.txt')
         ids = set([c.id for c in channels])
-        with open(os.path.join(markov.basepath, str(ctx.guild.id), 'blockedchannels.txt'), 'r+') as f:
+        
+        if not os.path.exists(path):
+            with open(path, 'w'): pass
+        with open(path, 'r+') as f:
             old_ids = set(f.read().split('\n'))
             out_ids = old_ids - ids
             f.write('\n'.join(out_ids))
