@@ -224,8 +224,10 @@ class MsgCog(commands.Cog):
 
     @commands.is_owner()
     @commands.command()
-    async def remodel(self, ctx):
-        await markov.init([173840048343482368])
+    async def remodel(self, ctx, _id: Optional):
+        if not _id:
+            _id = 173840048343482368
+        await markov.init([_id])
 
     @commands.is_owner()
     @commands.command()
