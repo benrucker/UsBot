@@ -181,7 +181,9 @@ class MsgCog(commands.Cog):
         with open(path, 'r+') as f:
             old_ids = set(f.read().split('\n'))
             out_ids = ids | old_ids
-            f.write('\n'.join(out_ids))
+            f.seek(0)
+            f.write('\n'.join(out_ids) + '\n')
+            f.truncate()
 
         print(
             f'blocked {len(out_ids)}, up from {len(old_ids)} with an input of {len(ids)} "new" channels')
@@ -206,7 +208,9 @@ class MsgCog(commands.Cog):
         with open(path, 'r+') as f:
             old_ids = set(f.read().split('\n'))
             out_ids = old_ids - ids
-            f.write('\n'.join(out_ids))
+            f.seek(0)
+            f.write('\n'.join(out_ids) + '\n')
+            f.truncate()
 
         print(
             f'unblocked {len(old_ids) - len(out_ids)} channels after given {len(ids)} as input')
