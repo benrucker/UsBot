@@ -235,9 +235,11 @@ def create_user_models(gid):
             print('failed to create model for', user.name)
 
 
-def invalid_file(filename):
-    # baddies = ['spam', 'dev', 'lowlights', 'the-real-us']
-    # return any([x in filename for x in baddies])
+def invalid_file(filename, gid):
+    with open(os.path.join(basepath, gid, 'blockedchannels.txt')) as f:
+        for name in f.readlines():
+            if filename == name:
+                return True
     return False
 
 
@@ -245,7 +247,7 @@ def import_chat_logs(gid):
     """Transform external message data into a list."""
     messages = []
     for filename in glob(os.path.join(basepath, str(gid), '*.csv')):
-        if invalid_file(filename):
+        if invalid_file(filename, gid):
             continue
         with open(filename, 'r', encoding='utf-8') as file:
             messages.extend(file.read().split('\n')[1:-1])
