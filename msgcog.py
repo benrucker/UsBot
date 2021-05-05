@@ -183,6 +183,7 @@ class MsgCog(commands.Cog):
         with open(path, 'r+') as f:
             old_ids = set(f.read().split('\n'))
             out_ids = ids | old_ids
+            out_ids.discard('')
             print(old_ids)
             print(out_ids)
             f.seek(0)
@@ -212,6 +213,7 @@ class MsgCog(commands.Cog):
         with open(path, 'r+') as f:
             old_ids = set(f.read().split('\n'))
             out_ids = old_ids - ids
+            out_ids.discard('')
             f.seek(0)
             f.write('\n'.join(out_ids).strip() + '\n')
             f.truncate()
