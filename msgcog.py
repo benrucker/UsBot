@@ -162,6 +162,10 @@ class MsgCog(commands.Cog):
 
     @commands.command()
     async def blockchannel(self, ctx, channels: commands.Greedy[discord.TextChannel]):
+        if len(channels) == 0:
+            await ctx.send("Error: I couldn't read any channels in your message. For best results, type in each channel name such that it turns blue before you send the command.")
+            return
+
         path = os.path.join(markov.basepath, str(ctx.guild.id), 'blockedchannels.txt')
         ids = set([str(c.id) for c in channels])
 
@@ -178,6 +182,10 @@ class MsgCog(commands.Cog):
 
     @commands.command()
     async def unblockchannel(self, ctx, channels: commands.Greedy[discord.TextChannel]):
+        if len(channels) == 0:
+            await ctx.send("Error: I couldn't read any channels in your message. For best results, type in each channel name such that it turns blue before you send the command.")
+            return
+
         path = os.path.join(markov.basepath, str(ctx.guild.id), 'blockedchannels.txt')
         ids = set([str(c.id) for c in channels])
 
