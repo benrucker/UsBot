@@ -6,10 +6,10 @@ import traceback as tb
 from glob import glob
 #from emojilist import emotelist
 
-filepath = 'E:\\Documents\\Discord\\chat logs\\exported\\'
+basepath = '/home/chamber/github/discord-markov/dlogger/exported'
 
-users = []
-user_list = []
+users = dict()
+user_list = dict()
 
 emotes = []
 
@@ -60,50 +60,55 @@ class CustomText(markovify.Text):
 def is_valid(msg):
     """Return True if the given message is valid."""
     invalidators = ['Joined the server.', 'Pinned a message.', '!get']
-    prefixes = ['!', '?', '$', '[]']
+    prefixes = ['!', '?', '$', '[]', '.']
     return True not in ([test in msg for test in invalidators]
                       + [msg.startswith(prefix) for prefix in prefixes])
 
 
-def user_from_name(name):
+def user_from_name(name, gid):
     """Return a user object from a name fragment."""
-    for user in user_list:
+    for user in user_list[gid]:
         u_name = user.name.lower()
         if u_name.startswith(name.lower()):
             return user
     return None
 
 
-def user_is_blacklisted(user):
+def user_is_blacklisted(user, gid):
     """Return True if the given User is blacklisted."""
     try:
-        with open('blacklist.csv', 'r') as file:
-            return user.id in file.read().split(',')
+        if not os.path.exists(os.path.join(basepath, str(gid), 'blacklist.csv')):
+            return False
+        with open(os.path.join(basepath, str(gid), 'blacklist.csv'), 'r') as file:
+            print('checking if', user.name + ':' + user.id, 'is in blacklist:')
+            return str(user.id) in file.read().split(',')
     except Exception as e:
+        print('exception reading blacklist')
+        print(e)
         return False
 
 
-def user_blacklist(user):
+def user_blacklist(user, gid):
     """Add a user to the blacklist."""
-    with open('blacklist.csv', 'a+') as file:
+    with open(os.path.join(basepath, str(gid), 'blacklist.csv'), 'a+') as file:
         file.write(user.id + ',')
 
 
-def get_full_name(name):
+def get_full_name(name, gid):
     """Return the full name of a user given a name fragment."""
-    user = user_from_name(name)
+    user = user_from_name(name, gid)
     if user:
         return user.name
     return None
 
 
-def add_user_to_blacklist(name):
+def add_user_to_blacklist(name, gid):
     """Add a user to the blacklist if the user is not already there."""
-    user = user_from_name(name)
+    user = user_from_name(name, gid)
     if not user:
         pass
-    elif not user_is_blacklisted(user):
-        user_blacklist(user)
+    elif not user_is_blacklisted(user, gid):
+        user_blacklist(user, gid)
         return True
     return False
 
@@ -147,15 +152,15 @@ def generate_sentence(person, num_tries, stupid):
         return sentence
 
 
-def return_one(name='', num_tries=500,  stupid=False):
+def return_one(gid, name='', num_tries=500,  stupid=False):
     """Return a nicely-formatted sentence for a given username."""
     try:
-        print('\n\nTrying to return one sentence from', name)
-        person = user_from_name(name)
+        print('\nTrying to return one sentence from', name)
+        person = user_from_name(name, gid)
         sentence = generate_sentence(person, num_tries, stupid)
         return process_sentence(person, sentence)
     except Exception as e:
-        print('failed to create sentence for ' + person.name)
+        print('failed to create sentence for ' + name)
         print(e)
         return None
 
@@ -165,133 +170,132 @@ def process_sentence(person, sentence):
     return ['**' + person.name + '**:  ', emojify(sentence)]
 
 
-def return_one_with_emote():
+def return_one_with_emote(gid):
     """Try to return a sentence that includes a formatted emote."""
     while True:
-        person = r.choice(user_list)
+        person = r.choice(user_list[gid])
         message = return_one(person.name, 250)
         if message and has_emojis(message[1]):
             return message
 
 
-def get_people():
+def get_people(gid):
     """Return a list with all stored User object names."""
-    return [x.name for x in user_list]
+    return [x.name for x in user_list[gid]]
 
 
-def id_in_user_list(id):
+def id_in_user_list(id, gid):
     """Return True if user id exists."""
-    for user in user_list:
+    for user in user_list[gid]:
         if user.id == id:
             return True
     return False
 
 
-def add_user(name, id):
+def add_user(name, id, gid):
     """Add a new user object to the list."""
-    global user_list
-    user_list.append(User(name, id))
+    user_list[gid].append(User(name, id))
 
 
-def get_user(id):
+def get_user(id, gid):
     """Return a User object given an id."""
-    for user in user_list:
+    for user in user_list[gid]:
         if user.id == id:
             return user
     return None
 
 
-def import_users_from_list(data):
+def import_users_from_list(data, gid):
     """Given a list of Discord message data, create User objects with relevant information."""
     for line in data:
-        #print('+'+line)
-        _entry = line.split('","')
-        if '**Discord HTTPException**' in line or len(_entry) < 4:
-            continue # hack to keep NotSoBot from breaking this code
-        _id = _entry[ID].strip('"')
-        _user = _entry[USER]
-        _name, _ = _user.split('#')
-        _msg = _entry[MSG]
-        # _reactions = _entry[RCTN].strip('"') # throws OOB
-        if not id_in_user_list(_id):
-            add_user(_name, _id)
-        if is_valid(_msg):
-            get_user(_id).add(_msg)
+        # print('+'+line)
+        _user = None
+        try:
+            _entry = line.split('","')
+            if '**Discord HTTPException**' in line or len(_entry) < 4:
+                continue # hack to keep NotSoBot from breaking this code
+            _id = _entry[ID].strip('"')
+            _user = _entry[USER]
+            _name, _ = _user.split('#', maxsplit=1)
+            _msg = _entry[MSG]
+            # _reactions = _entry[RCTN].strip('"') # throws OOB
+            if not id_in_user_list(_id, gid):
+                add_user(_name, _id, gid)
+            if is_valid(_msg):
+                get_user(_id, gid).add(_msg)
+        except Exception as e:
+            print(e)
+            print('line:', line)
+            print('user:', _user)
 
-def create_user_models():
+def create_user_models(gid):
     """Create text models for each existing user."""
-    global user_list
-    for user in user_list:
+    for user in user_list[gid]:
         try:
             user.create_models()
         except Exception as e:
-            # print(e)
             print('failed to create model for', user.name)
 
 
-def invalid_file(filename):
-    baddies = ['spam', 'dev', 'lowlights', 'the-real-us']
-    return any([x in filename for x in baddies])
+def invalid_file(filename, gid):
+    path = os.path.join(basepath, str(gid), 'blockedchannels.txt')
+
+    if not os.path.exists(path):
+        return False
+    with open(path) as f:
+        for _id in f:
+            if _id.strip() in filename:
+                print('ignoring channel with id', _id.strip())
+                return True
+    return False
 
 
-def import_chat_logs():
+def import_chat_logs(gid):
     """Transform external message data into a list."""
     messages = []
-    for filename in glob(os.path.join(filepath, '*.csv')):
-        if invalid_file(filename):
+    for filename in glob(os.path.join(basepath, str(gid), '*.csv')):
+        if invalid_file(filename, gid):
             continue
         with open(filename, 'r', encoding='utf-8') as file:
             messages.extend(file.read().split('\n')[1:-1])
     return messages
 
 
-def import_therealus():
+def import_therealus(gid):
     messages = []
-    for filename in glob(os.path.join(filepath, '*the-real-us*.csv')):
+    for filename in glob(os.path.join(basepath, str(gid), '*the-real-us*.csv')):
         with open(filename, 'r', encoding='utf-8') as file:
             entries = file.read().split('\n')[1:-1]
             messages.extend([e for e in entries if '"497602687211143189",' in e])
     return messages
 
 
-def import_usbot_user():
-    for line in import_therealus():
+def import_usbot_user(gid):
+    for line in import_therealus(gid):
         #print('+'+line)
         _entry = line.split('","')
         if '**Discord HTTPException**' in line or len(_entry) < 4:
             continue # hack to keep NotSoBot from breaking this code
         _id = _entry[ID].strip('"')
         _user = _entry[USER]
-        _name, _ = _user.split('#')
+        _name, _ = _user.split('#', maxsplit=1)
         _msg = _entry[MSG]
         # _reactions = _entry[RCTN].strip('"') # throws OOB
-        if not id_in_user_list(_id):
-            add_user(_name, _id)
+        if not id_in_user_list(_id, gid):
+            add_user(_name, _id, gid)
         if is_valid(_msg):
-            get_user(_id).add(_msg)
+            get_user(_id, gid).add(_msg)
 
 
-def init_emotes(_emotes):
-    """Set the list emotes given an input list."""
-    global emotes
-    emotes = _emotes
+async def init(gids):
+    print(gids)
+    for gid in gids:
+        print('updating gid', gid)
+        messages = import_chat_logs(gid)
+        user_list[gid] = list()
+        import_users_from_list(messages, gid)
+        import_usbot_user(gid)
+        create_user_models(gid)
+        print('done with markov')
 
 
-def __init__():
-    global users
-    global user_list
-    users = []
-    user_list = []
-    messages = import_chat_logs()
-    import_users_from_list(messages)
-    import_usbot_user()
-    create_user_models()
-
-
-__init__()
-
-if __name__ == '__main__':
-    for user in user_list:
-        if user_is_blacklisted(user):
-            continue
-        print(return_one(name=user.name))
