@@ -164,7 +164,7 @@ class MsgCog(commands.Cog):
         if not sent_one:
             await ctx.send("Looks like there aren't enough messages for me to generate new ones from. Try again later!")
 
-    @commands.command()
+    @commands.command(aliases=['blockchannels'])
     async def blockchannel(self, ctx, channels: commands.Greedy[discord.TextChannel]):
         if len(channels) == 0:
             await ctx.send("Error: I didn't find any channels in your message." + \
@@ -196,7 +196,7 @@ class MsgCog(commands.Cog):
             '. If there was an error, unblock a channel with `us.unblockchannel #text-channel`.'
         await ctx.send(outmsg)
 
-    @commands.command()
+    @commands.command(aliases=['unblockchannels'])
     async def unblockchannel(self, ctx, channels: commands.Greedy[discord.TextChannel]):
         if len(channels) == 0:
             await ctx.send("Error: I didn't find any channels in your message." + \
