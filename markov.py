@@ -236,8 +236,12 @@ def create_user_models(gid):
 
 
 def invalid_file(filename, gid):
-    with open(os.path.join(basepath, str(gid), 'blockedchannels.txt')) as f:
-        for name in f.readlines():
+    path = os.path.join(basepath, str(gid), 'blockedchannels.txt')
+
+    if not os.path.exists(path):
+        return False
+    with open(path) as f:
+        for name in f:
             if filename == name:
                 return True
     return False
