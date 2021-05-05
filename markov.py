@@ -243,7 +243,7 @@ def invalid_file(filename, gid):
     with open(path) as f:
         for _id in f:
             print('checking this id:', _id, 'against this filename:\n', filename)
-            if _id in filename:
+            if _id.strip() in filename:
                 return True
     return False
 
