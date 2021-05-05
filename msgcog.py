@@ -14,14 +14,17 @@ import os
 
 ATTEMPTS = 50
 
+
 def setup(bot):
     bot.add_cog(MsgCog(bot))
+
 
 def get_next_monday():
     today = datetime.date.today()
     next_monday = today + datetime.timedelta(days=-today.weekday(), weeks=1)
     print(next_monday)
     return next_monday
+
 
 class MsgCog(commands.Cog):
 
@@ -104,7 +107,7 @@ class MsgCog(commands.Cog):
         """Send a message based on a specific user with a different text model."""
         _name = name_from_command(name, ctx.guild.id)
         await self.command_get_specified(ctx.message, name=_name, num_tries=100000, stupid=True)
-    
+
     @commands.command()
     async def debugemote(self, ctx):
         progress_text = await ctx.message.channel.send('This might take a while.')
@@ -129,7 +132,8 @@ class MsgCog(commands.Cog):
             if not name:
                 msg = 'Error: specified user does not exist'
             else:
-                msg = self.generate_message(ctx.guild.id, name, num_tries=num_tries, stupid=stupid)
+                msg = self.generate_message(
+                    ctx.guild.id, name, num_tries=num_tries, stupid=stupid)
         await ctx.message.channel.send(msg, tts=self.do_tts)
 
     async def command_get_unspecified(self, ctx, gid):
@@ -156,7 +160,7 @@ class MsgCog(commands.Cog):
                 await ctx.channel.send(msg, tts=self.do_tts)
                 sent_one = True
                 break
-        
+
         if not sent_one:
             await ctx.send("Looks like there aren't enough messages for me to generate new ones from. Try again later!")
 
@@ -166,18 +170,22 @@ class MsgCog(commands.Cog):
             await ctx.send("Error: I couldn't read any channels in your message. For best results, type in each channel name such that it turns blue before you send the command.")
             return
 
-        path = os.path.join(markov.basepath, str(ctx.guild.id), 'blockedchannels.txt')
+        path = os.path.join(markov.basepath, str(
+            ctx.guild.id), 'blockedchannels.txt')
         ids = set([str(c.id) for c in channels])
 
         if not os.path.exists(path):
-            with open(path, 'w'): pass
+            with open(path, 'w'):
+                pass
         with open(path, 'r+') as f:
             old_ids = set(f.read().split('\n'))
             out_ids = ids | old_ids
             f.write('\n'.join(out_ids))
 
-        print(f'blocked {len(out_ids)}, up from {len(old_ids)} with an input of {len(ids)} "new" channels')
-        outmsg = 'Got it! ' + ', '.join(['#' + c.name for c in channels]) + ' have been blocked. If there was an error, unblock a channel with `us.unblockchannel #text-channel`.'
+        print(
+            f'blocked {len(out_ids)}, up from {len(old_ids)} with an input of {len(ids)} "new" channels')
+        outmsg = 'Got it! ' + ', '.join(['#' + c.name for c in channels]) + \
+            ' have been blocked. If there was an error, unblock a channel with `us.unblockchannel #text-channel`.'
         await ctx.send(outmsg)
 
     @commands.command()
@@ -186,17 +194,20 @@ class MsgCog(commands.Cog):
             await ctx.send("Error: I couldn't read any channels in your message. For best results, type in each channel name such that it turns blue before you send the command.")
             return
 
-        path = os.path.join(markov.basepath, str(ctx.guild.id), 'blockedchannels.txt')
+        path = os.path.join(markov.basepath, str(
+            ctx.guild.id), 'blockedchannels.txt')
         ids = set([str(c.id) for c in channels])
 
         if not os.path.exists(path):
-            with open(path, 'w'): pass
+            with open(path, 'w'):
+                pass
         with open(path, 'r+') as f:
             old_ids = set(f.read().split('\n'))
             out_ids = old_ids - ids
             f.write('\n'.join(out_ids))
 
-        print(f'unblocked {len(old_ids) - len(out_ids)} channels after given {len(ids)} as input')
+        print(
+            f'unblocked {len(old_ids) - len(out_ids)} channels after given {len(ids)} as input')
         await ctx.send('Understood! Those channels have been unblocked.')
 
     @commands.is_owner()
@@ -214,7 +225,8 @@ class MsgCog(commands.Cog):
 
     def generate_message(self, gid, name, num_tries=250, stupid=False):
         """Return a new sentence based on user name."""
-        msg = markov.return_one(gid, name=name, num_tries=num_tries, stupid=stupid)
+        msg = markov.return_one(
+            gid, name=name, num_tries=num_tries, stupid=stupid)
         if msg is not None:
             print('succeeded')
             print(msg)
