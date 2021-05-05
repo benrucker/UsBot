@@ -50,9 +50,10 @@ class SetupCog(commands.Cog):
 _As a note, I take your privacy very seriously. Your chat logs will never be read by anyone. The only messages the dev can see are the ones you prefix with `us.`_
 
 Before we begin, we need to do some setup:
-**1.** Make sure that I have access to all the channels you'd like to be incorporated (and similarly, make sure I have no access to channels you don't want appearing in my messages. ||i strongly recommend removing me from your bot spam channel, if you have one||).
-**2.** Once you have done that, click the checkmark reaction on this message to let me know that I can begin analyzing. This can take some time depending on how many messages are in each channel, so be patient. It may take as long as an hour :flushed:
-**3.** Remove my ability to @ everyone by modifying my permissions in the channel that you will use `us.get` in ||unless you're a little crazy||
+**1.** Make sure that I have access to all the channels you'd like to be incorporated.
+**2.** Use the command `us.blockchannel #text-channel1 #text-channel2 ...` to block specific channels from being loaded. You should block any spam channel that is used for bot commands or other non-conversational things. Note that any new channel created will automatically be analyzed; if you create a new spam channel, use `us.blockchannel` again to block it.
+**3.** Once you have done that, click the checkmark reaction on this message to let me know that I can begin analyzing. This can take some time depending on how many messages are in each channel, so be patient. It may take as long as an hour :flushed:
+**4.** Remove my ability to @ everyone by modifying my permissions in the channel that you will use `us.get` in ||unless you're a little crazy||
 """
         )
 

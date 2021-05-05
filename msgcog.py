@@ -10,6 +10,7 @@ from discord.ext import commands, tasks
 
 import markov
 from dlogger import dlogger
+import os
 
 ATTEMPTS = 50
 
@@ -158,6 +159,28 @@ class MsgCog(commands.Cog):
         
         if not sent_one:
             await ctx.send("Looks like there aren't enough messages for me to generate new ones from. Try again later!")
+
+    @commands.command()
+    async def blockchannel(self, ctx, channels: commands.Greedy[discord.TextChannel]):
+        ids = set([c.id for c in channels])
+        with open(os.path.join(markov.basepath, str(ctx.guild.id), 'blockedchannels.txt'), 'r+') as f:
+            old_ids = set(f.read().split('\n'))
+            out_ids = ids | old_ids
+            f.write('\n'.join(out_ids))
+
+        print(f'blocked {len(out_ids)}, up from {len(old_ids)} with an input of {len(ids)} "new" channels')
+        outmsg = 'Got it! ' + ', '.join(['#' + c.name for c in channels]) + ' have been blocked. If there was an error, unblock a channel with `us.unblockchannel #text-channel`.'
+
+    @commands.command()
+    async def unblockchannel(self, ctx, channels: commands.Greedy[discord.TextChannel]):
+        ids = set([c.id for c in channels])
+        with open(os.path.join(markov.basepath, str(ctx.guild.id), 'blockedchannels.txt'), 'r+') as f:
+            old_ids = set(f.read().split('\n'))
+            out_ids = old_ids - ids
+            f.write('\n'.join(out_ids))
+
+        print(f'unblocked {len(old_ids) - len(out_ids)} channels after given {len(ids)} as input')
+        outmsg = f'Understood! Those channels have been unblocked.'
 
     @commands.is_owner()
     @commands.command()
