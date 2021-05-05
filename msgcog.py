@@ -167,7 +167,7 @@ class MsgCog(commands.Cog):
     @commands.command()
     async def blockchannel(self, ctx, channels: commands.Greedy[discord.TextChannel]):
         if len(channels) == 0:
-            await ctx.send("Error: I couldn't read any channels in your message." + \
+            await ctx.send("Error: I didn't find any channels in your message." + \
                 "For best results, type in each channel name such that it turns blue before you send the command.")
             return
 
@@ -192,7 +192,7 @@ class MsgCog(commands.Cog):
     @commands.command()
     async def unblockchannel(self, ctx, channels: commands.Greedy[discord.TextChannel]):
         if len(channels) == 0:
-            await ctx.send("Error: I couldn't read any channels in your message." + \
+            await ctx.send("Error: I didn't find any channels in your message." + \
                 "For best results, type in each channel name such that it turns blue before you send the command.")
             return
 
@@ -210,7 +210,7 @@ class MsgCog(commands.Cog):
 
         print(
             f'unblocked {len(old_ids) - len(out_ids)} channels after given {len(ids)} as input')
-        await ctx.send('Understood! Those channels have been unblocked.')
+        await ctx.send('Understood! Those channels have been unblocked. Give me a second to refresh the models.')
 
     @commands.is_owner()
     @commands.command()
