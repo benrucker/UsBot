@@ -1,4 +1,5 @@
 import datetime
+import os
 import random as r
 import sys
 import time
@@ -10,7 +11,6 @@ from discord.ext import commands, tasks
 
 import markov
 from dlogger import dlogger
-import os
 
 ATTEMPTS = 50
 
@@ -171,20 +171,20 @@ class MsgCog(commands.Cog):
                 "For best results, type in each channel name such that it turns blue before you send the command.")
             return
 
-        path = os.path.join(markov.basepath, str(
-            ctx.guild.id), 'blockedchannels.txt')
-        ids = set([str(c.id) for c in channels])
+        path = os.path.join(markov.basepath, str(ctx.guild.id),
+            'blockedchannels.txt')
+        names = set([str(c.name) for c in channels])
 
         if not os.path.exists(path):
             with open(path, 'w'):
                 pass
         with open(path, 'r+') as f:
-            old_ids = set(f.read().split('\n'))
-            out_ids = ids | old_ids
-            f.write('\n'.join(out_ids))
+            old_names = set(f.read().split('\n'))
+            out_names = names | old_names
+            f.write('\n'.join(out_names))
 
         print(
-            f'blocked {len(out_ids)}, up from {len(old_ids)} with an input of {len(ids)} "new" channels')
+            f'blocked {len(out_names)}, up from {len(old_names)} with an input of {len(names)} "new" channels')
         outmsg = 'Got it! ' + ', '.join(['#' + c.name for c in channels]) + \
             ' have been blocked. If there was an error, unblock a channel with `us.unblockchannel #text-channel`.'
         await ctx.send(outmsg)
@@ -196,20 +196,20 @@ class MsgCog(commands.Cog):
                 "For best results, type in each channel name such that it turns blue before you send the command.")
             return
 
-        path = os.path.join(markov.basepath, str(
-            ctx.guild.id), 'blockedchannels.txt')
-        ids = set([str(c.id) for c in channels])
+        path = os.path.join(markov.basepath, str(ctx.guild.id),
+            'blockedchannels.txt')
+        names = set([str(c.id) for c in channels])
 
         if not os.path.exists(path):
             with open(path, 'w'):
                 pass
         with open(path, 'r+') as f:
-            old_ids = set(f.read().split('\n'))
-            out_ids = old_ids - ids
-            f.write('\n'.join(out_ids))
+            old_names = set(f.read().split('\n'))
+            out_names = old_names - names
+            f.write('\n'.join(out_names))
 
         print(
-            f'unblocked {len(old_ids) - len(out_ids)} channels after given {len(ids)} as input')
+            f'unblocked {len(old_names) - len(out_names)} channels after given {len(names)} as input')
         await ctx.send('Understood! Those channels have been unblocked.')
 
     @commands.is_owner()
