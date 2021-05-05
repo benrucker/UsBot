@@ -241,8 +241,8 @@ def invalid_file(filename, gid):
     if not os.path.exists(path):
         return False
     with open(path) as f:
-        for name in f:
-            if filename == name:
+        for _id in f:
+            if _id in filename:
                 return True
     return False
 
