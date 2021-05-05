@@ -174,6 +174,7 @@ class MsgCog(commands.Cog):
 
         print(f'blocked {len(out_ids)}, up from {len(old_ids)} with an input of {len(ids)} "new" channels')
         outmsg = 'Got it! ' + ', '.join(['#' + c.name for c in channels]) + ' have been blocked. If there was an error, unblock a channel with `us.unblockchannel #text-channel`.'
+        await ctx.send(outmsg)
 
     @commands.command()
     async def unblockchannel(self, ctx, channels: commands.Greedy[discord.TextChannel]):
@@ -188,7 +189,7 @@ class MsgCog(commands.Cog):
             f.write('\n'.join(out_ids))
 
         print(f'unblocked {len(old_ids) - len(out_ids)} channels after given {len(ids)} as input')
-        outmsg = f'Understood! Those channels have been unblocked.'
+        await ctx.send('Understood! Those channels have been unblocked.')
 
     @commands.is_owner()
     @commands.command()
