@@ -32,6 +32,9 @@ class SetupCog(commands.Cog):
     @commands.is_owner()
     @commands.command()
     async def testjoin(self, ctx):
+        os.makedirs(os.path.join('dlogger', 'exported',
+                    str(ctx.guild.id)), exist_ok=True)
+        print(f'Test Added to {ctx.guild.name}:{ctx.guild.id}!')
         await self.on_new_guild(ctx.guild)
 
     def has_setup_perms(self, channel, user):
