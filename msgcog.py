@@ -175,12 +175,16 @@ class MsgCog(commands.Cog):
             'blockedchannels.txt')
         ids = set([str(c.id) for c in channels])
 
+        print(ids)
+
         if not os.path.exists(path):
             with open(path, 'w'):
                 pass
         with open(path, 'r+') as f:
             old_ids = set(f.read().split('\n'))
             out_ids = ids | old_ids
+            print(old_ids)
+            print(out_ids)
             f.seek(0)
             f.write('\n'.join(out_ids).strip() + '\n')
             f.truncate()
