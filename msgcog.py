@@ -123,7 +123,7 @@ class MsgCog(commands.Cog):
         if not name:
             await self.command_get_unspecified(ctx, ctx.guild.id)
         else:
-            await self.command_get_specified(ctx, name)
+            await self.command_get_specified(ctx, name_from_command(name, ctx.guild.id))
 
     async def command_get_specified(self, ctx: commands.Context, name, num_tries=500, stupid=False):
         """Send a message based on a specific user."""
