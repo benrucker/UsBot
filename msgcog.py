@@ -105,7 +105,7 @@ class MsgCog(commands.Cog):
     @commands.command()
     async def getstupid(self, ctx, *, name: str):
         """Send a message based on a specific user with a different text model."""
-        _name = name_from_command(name, ctx.guild.id)
+        _name = self.name_from_command(name, ctx.guild.id)
         await self.command_get_specified(ctx.message, name=_name, num_tries=100000, stupid=True)
 
     @commands.command()
@@ -123,7 +123,7 @@ class MsgCog(commands.Cog):
         if not name:
             await self.command_get_unspecified(ctx, ctx.guild.id)
         else:
-            await self.command_get_specified(ctx, name_from_command(name, ctx.guild.id))
+            await self.command_get_specified(ctx, self.name_from_command(name, ctx.guild.id))
 
     async def command_get_specified(self, ctx: commands.Context, name, num_tries=500, stupid=False):
         """Send a message based on a specific user."""
