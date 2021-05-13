@@ -78,7 +78,7 @@ class MsgCog(commands.Cog):
     @commands.command()
     async def blacklist(self, ctx, *, name: str):
         if not ctx.message.author.id == 173978157349601283:
-            await send_error(ctx.channel, err_type='perms')
+            await self.send_error(ctx.channel, err_type='perms')
 
         username = self.name_from_command(name, ctx.guild.id)
         success = markov.add_user_to_blacklist(username, ctx.guild.id)
