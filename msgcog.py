@@ -182,6 +182,7 @@ class MsgCog(commands.Cog):
                 pass
         with open(path, 'r+') as f:
             old_ids = set(f.read().split('\n'))
+            old_ids.discard('')
             out_ids = ids | old_ids
             out_ids.discard('')
             print(old_ids)
