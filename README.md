@@ -4,9 +4,8 @@ UsBot is a Discord bot that utilizes the package `markovify` to make new sentenc
 
 Report any issues you experience to the Issues tab on this GitHub repo.
 
-## Installation
-
-The logging part of the bot is not open source. This means that if you want to use this code to make your own bot, you will have to write that yourself. I do not recommend doing this.
+> ### Note:
+> The logging portion of the bot is not open source. This means that if you want to use this code to make your own bot, you will have to write that yourself. I do not recommend doing this.
 
 ## Commands
 All commands are prefixed with `us.`
