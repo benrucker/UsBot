@@ -1,5 +1,5 @@
 # UsBot
-UsBot is a Discord bot that utilizes the package `markovify` to make new sentences based on Discord users. Click [here](https://discord.com/api/oauth2/authorize?client_id=837517727488933889&permissions=343040&scope=bot
+UsBot is a Discord bot that utilizes the package `markovify` to make new sentences based on Discord users. Click [here](https://discord.com/api/oauth2/authorize?client_id=837517727488933889&permissions=343104&scope=bot
 ) to add it to your sever! The bot will step you through the setup process.
 
 Report any issues you experience to the Issues tab on this GitHub repo.
