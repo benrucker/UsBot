@@ -112,7 +112,7 @@ class MsgCog(commands.Cog):
     async def debugemote(self, ctx):
         progress_text = await ctx.message.channel.send('This might take a while.')
         async with ctx.message.channel.typing():
-            msg_data = markov.return_one_with_emote()
+            msg_data = markov.return_one_with_emote(ctx.guild.id)
             print(msg_data)
             msg = self.format_message(msg_data)
         await progress_text.delete()
