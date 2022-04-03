@@ -29,5 +29,6 @@ if __name__ == '__main__':
     file.close()
     bot.load_extension('msgcog')
     bot.load_extension('setupcog')
+    bot.load_extension('admincog')
     dlogger.setup(bot)
     bot.run(secret)
