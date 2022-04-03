@@ -69,7 +69,7 @@ class MsgCog(commands.Cog):
     async def _list(self, ctx):
         list = '\n'.join(markov.get_people(ctx.guild.id))
         msg = '```' + list + '```'
-        await ctx.message.author.send(msg)
+        await ctx.message.author.send(msg, allowed_mentions=discord.AllowedMentions(everyone=False, roles=False, users=False))
 
     @commands.command()
     async def partyrockersinthehou(self, ctx):
@@ -87,7 +87,7 @@ class MsgCog(commands.Cog):
             msg_out = username + ' will no longer send messages here.'
         else:
             msg_out = username + ' could not be blacklisted or is already blacklisted.'
-        await ctx.message.channel.send(msg_out)
+        await ctx.message.channel.send(msg_out, allowed_mentions=discord.AllowedMentions(everyone=False, roles=False, users=False))
 
     @commands.command()
     async def say(self, ctx, *, content: str):
@@ -133,8 +133,9 @@ class MsgCog(commands.Cog):
                 msg = 'Error: specified user does not exist'
             else:
                 msg = self.generate_message(
-                    ctx.guild.id, name, num_tries=num_tries, stupid=stupid)
-        await ctx.message.channel.send(msg, tts=self.do_tts)
+                    ctx.guild.id, name, num_tries=num_tries, stupid=stupid
+                )
+        await ctx.message.channel.send(msg, tts=self.do_tts, allowed_mentions=discord.AllowedMentions(everyone=False, roles=False))
 
     async def command_get_unspecified(self, ctx, gid):
         """Send multiple messages based on randomly chosen users.
@@ -157,7 +158,7 @@ class MsgCog(commands.Cog):
                     else:
                         print("succeeded")
                         print(msg)
-                await ctx.channel.send(msg, tts=self.do_tts)
+                await ctx.channel.send(msg, tts=self.do_tts, allowed_mentions=discord.AllowedMentions(everyone=False, roles=False))
                 sent_one = True
                 break
 
