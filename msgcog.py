@@ -96,7 +96,7 @@ class MsgCog(commands.Cog):
             msg = ' '.join(ctx.message.content.split(' ')[1:])
             msg = markov.emojify(msg)
             print(msg)
-            await ctx.message.channel.send(msg)
+            await ctx.message.channel.send(msg, allowed_mentions=discord.AllowedMentions(everyone=False, roles=False))
         except BaseException as e:
             print("error on testmessage")
             print(type(e), str(e))
