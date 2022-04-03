@@ -106,7 +106,7 @@ class MsgCog(commands.Cog):
     async def getstupid(self, ctx, *, name: str):
         """Send a message based on a specific user with a different text model."""
         _name = self.name_from_command(name, ctx.guild.id)
-        await self.command_get_specified(ctx.message, name=_name, num_tries=100000, stupid=True)
+        await self.command_get_specified(ctx, name=_name, num_tries=100000, stupid=True)
 
     @commands.command()
     async def debugemote(self, ctx):
