@@ -12,6 +12,9 @@ from dlogger import dlogger
 
 logging.basicConfig(level=logging.INFO)
 
+INTENTS = discord.Intents.default()
+INTENTS.message_content = True
+
 class UsBot(commands.Bot):
     """Discord-interacting UsBot class."""
 
@@ -23,7 +26,7 @@ class UsBot(commands.Bot):
         print('reddy')
 
 if __name__ == '__main__':
-    bot = UsBot()
+    bot = UsBot(intents=INTENTS)
     file = open('secret.txt')
     secret = file.read()
     file.close()
