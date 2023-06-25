@@ -22,16 +22,20 @@ class UsBot(commands.Bot):
         self.updating = False
         super().__init__(**kwargs, command_prefix=commands.when_mentioned_or('us.'))
 
+    async def setup_hook(self) -> None:
+        await self.load_extension('msgcog')
+        await self.load_extension('setupcog')
+        await self.load_extension('admincog')
+        return await super().setup_hook()
+
     async def on_ready(self):
         print('reddy')
 
 if __name__ == '__main__':
-    bot = UsBot(intents=INTENTS)
     file = open('secret.txt')
     secret = file.read()
     file.close()
-    bot.load_extension('msgcog')
-    bot.load_extension('setupcog')
-    bot.load_extension('admincog')
+
+    bot = UsBot(intents=INTENTS)
     dlogger.setup(bot)
     bot.run(secret)
