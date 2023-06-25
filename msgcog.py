@@ -15,8 +15,8 @@ from dlogger import dlogger
 ATTEMPTS = 50
 
 
-def setup(bot):
-    bot.add_cog(MsgCog(bot))
+async def setup(bot):
+    await bot.add_cog(MsgCog(bot))
 
 
 def get_next_monday():

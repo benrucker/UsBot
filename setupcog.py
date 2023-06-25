@@ -5,8 +5,8 @@ from discord.ext import commands
 import os
 
 
-def setup(bot):
-    bot.add_cog(SetupCog(bot))
+async def setup(bot):
+    await bot.add_cog(SetupCog(bot))
 
 
 class SetupCog(commands.Cog):
