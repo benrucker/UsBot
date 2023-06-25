@@ -26,6 +26,7 @@ class UsBot(commands.Bot):
         await self.load_extension('msgcog')
         await self.load_extension('setupcog')
         await self.load_extension('admincog')
+        await dlogger.setup(bot)
         return await super().setup_hook()
 
     async def on_ready(self):
@@ -37,5 +38,4 @@ if __name__ == '__main__':
     file.close()
 
     bot = UsBot(intents=INTENTS)
-    dlogger.setup(bot)
     bot.run(secret)
