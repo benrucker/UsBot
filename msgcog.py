@@ -233,7 +233,8 @@ class MsgCog(commands.Cog):
     @commands.is_owner()
     @commands.command()
     async def die(self, ctx):
-        sys.exit(0)
+        print("Shutdown command received.")
+        await self.bot.close()
 
     def name_from_command(self, name, gid):
         """Return a valid username given a username fragment in a command."""
