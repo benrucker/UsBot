@@ -1,26 +1,10 @@
+from asyncio import sleep
+import asyncio
 import markovify
 import re
 import os
 import random as r
-import traceback as tb
 from glob import glob
-#from emojilist import emotelist
-
-basepath = 'dlogger/exported'
-
-users = dict()
-user_list = dict()
-
-emotes = []
-
-ID   = 0
-USER = 1
-DATE = 2
-MSG  = 3
-ATCH = 4
-RCTN = 5
-
-MODEL_DELIM = '}{'
 
 
 class User:
@@ -38,11 +22,32 @@ class User:
         """Add message data to user object."""
         self.text.append(msg_to_add)
 
-    def create_models(self):
+    async def create_models(self):
         """Create the markov models for the object."""
         _text = MODEL_DELIM.join(self.text)
         self.model = CustomText(_text, state_size=2)
+        # Return control to the event loop to minimize the chance
+        # of blocking the main thread for too long.
+        await sleep(0)
         self.stupid = CustomText(_text, state_size=5)
+
+
+basepath = 'dlogger/exported'
+
+users = dict()
+user_list: dict[str, list[User]] = dict()
+
+emotes = []
+
+# Columns in the CSV files
+ID   = 0
+USER = 1
+DATE = 2
+MSG  = 3
+ATCH = 4
+RCTN = 5
+
+MODEL_DELIM = '}{'
 
 
 class CustomText(markovify.Text):
@@ -174,7 +179,7 @@ def return_one_with_emote(gid):
     """Try to return a sentence that includes a formatted emote."""
     while True:
         person = r.choice(user_list[gid])
-        message = return_one(person.name, 250)
+        message = return_one(person.name, num_tries=250)
         if message and has_emojis(message[1]):
             return message
 
@@ -205,7 +210,7 @@ def get_user(id, gid):
     return None
 
 
-def import_users_from_list(data, gid):
+async def import_users_from_list(data, gid):
     """Given a list of Discord message data, create User objects with relevant information."""
     for line in data:
         # print('+'+line)
@@ -221,6 +226,7 @@ def import_users_from_list(data, gid):
             # _reactions = _entry[RCTN].strip('"') # throws OOB
             if not id_in_user_list(_id, gid):
                 add_user(_name, _id, gid)
+            
             if is_valid(_msg):
                 get_user(_id, gid).add(_msg)
         except Exception as e:
@@ -228,11 +234,12 @@ def import_users_from_list(data, gid):
             print('line:', line)
             print('user:', _user)
 
-def create_user_models(gid):
+
+async def create_user_models(gid):
     """Create text models for each existing user."""
     for user in user_list[gid]:
         try:
-            user.create_models()
+            await user.create_models()
         except Exception as e:
             print('failed to create model for', user.name)
 
@@ -250,8 +257,8 @@ def invalid_file(filename, gid):
     return False
 
 
-def import_chat_logs(gid):
-    """Transform external message data into a list."""
+async def import_chat_logs(gid):
+    """Read the message CSVs."""
     messages = []
     for filename in glob(os.path.join(basepath, str(gid), '*.csv')):
         if invalid_file(filename, gid):
@@ -261,7 +268,7 @@ def import_chat_logs(gid):
     return messages
 
 
-def import_therealus(gid):
+async def import_therealus(gid):
     messages = []
     for filename in glob(os.path.join(basepath, str(gid), '*the-real-us*.csv')):
         with open(filename, 'r', encoding='utf-8') as file:
@@ -270,8 +277,8 @@ def import_therealus(gid):
     return messages
 
 
-def import_usbot_user(gid):
-    for line in import_therealus(gid):
+async def import_usbot_user(gid):
+    for line in await import_therealus(gid):
         #print('+'+line)
         _entry = line.split('","')
         if '**Discord HTTPException**' in line or len(_entry) < 4:
@@ -283,19 +290,25 @@ def import_usbot_user(gid):
         # _reactions = _entry[RCTN].strip('"') # throws OOB
         if not id_in_user_list(_id, gid):
             add_user(_name, _id, gid)
+        
         if is_valid(_msg):
             get_user(_id, gid).add(_msg)
 
 
+
 async def init(gids):
     print(gids)
-    for gid in gids:
-        print('updating gid', gid)
-        messages = import_chat_logs(gid)
-        user_list[gid] = list()
-        import_users_from_list(messages, gid)
-        import_usbot_user(gid)
-        create_user_models(gid)
-        print('done with markov')
+    guild_process_tasks = [process_guild_logs(gid) for gid in gids]
+    await asyncio.gather(*guild_process_tasks)
+    print('done with init')
 
 
+async def process_guild_logs(gid):
+    print('updating gid', gid)
+    messages = await import_chat_logs(gid)
+    user_list[gid] = list()
+    await import_users_from_list(messages, gid)
+    await import_usbot_user(gid)
+    await create_user_models(gid)
+    print('done with markov for', gid, 'with', len(user_list[gid]), 'users')
+    

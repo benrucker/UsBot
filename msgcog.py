@@ -2,12 +2,11 @@ import datetime
 import os
 import random as r
 import sys
-import time
 import traceback as tb
 from typing import Optional
 
 import discord
-from discord.ext import commands, tasks
+from discord.ext import commands
 
 import markov
 from dlogger import dlogger
@@ -57,7 +56,7 @@ class MsgCog(commands.Cog):
     @commands.is_owner()
     @commands.command()
     async def reset(self, ctx):
-        await markov.init()
+        await markov.init(ctx.guild.id)
 
     @commands.command()
     async def tts(self, ctx):

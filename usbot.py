@@ -1,9 +1,4 @@
 import logging
-import random as r
-import sys
-import time
-import traceback as tb
-from typing import Optional
 
 import discord
 from discord.ext import commands
@@ -20,7 +15,7 @@ class UsBot(commands.Bot):
 
     def __init__(self, **kwargs):
         self.updating = False
-        super().__init__(**kwargs, command_prefix=commands.when_mentioned_or('us.'))
+        super().__init__(**kwargs, command_prefix=commands.when_mentioned_or('us.', 'Us.'))
 
     async def setup_hook(self) -> None:
         await self.load_extension('msgcog')
