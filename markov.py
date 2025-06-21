@@ -34,8 +34,7 @@ class User:
 
 basepath = 'dlogger/exported'
 
-users = dict()
-user_list: dict[str, list[User]] = dict()
+user_by_id_by_guild_id: dict[str, dict[str, User]] = dict()
 
 emotes = []
 
@@ -72,7 +71,7 @@ def is_valid(msg):
 
 def user_from_name(name, gid):
     """Return a user object from a name fragment."""
-    for user in user_list[gid]:
+    for user in user_by_id_by_guild_id[gid].values():
         u_name = user.name.lower()
         if u_name.startswith(name.lower()):
             return user
@@ -99,7 +98,7 @@ def user_blacklist(user, gid):
         file.write(user.id + ',')
 
 
-def get_full_name(name, gid):
+def get_full_name(name, gid) -> str | None:
     """Return the full name of a user given a name fragment."""
     user = user_from_name(name, gid)
     if user:
@@ -178,7 +177,7 @@ def process_sentence(person, sentence):
 def return_one_with_emote(gid):
     """Try to return a sentence that includes a formatted emote."""
     while True:
-        person = r.choice(user_list[gid])
+        person = r.choice(list(user_by_id_by_guild_id[gid].values()))
         message = return_one(person.name, num_tries=250)
         if message and has_emojis(message[1]):
             return message
@@ -186,28 +185,22 @@ def return_one_with_emote(gid):
 
 def get_people(gid):
     """Return a list with all stored User object names."""
-    return [x.name for x in user_list[gid]]
+    return [x.name for x in user_by_id_by_guild_id[gid].values()]
 
 
 def id_in_user_list(id, gid):
     """Return True if user id exists."""
-    for user in user_list[gid]:
-        if user.id == id:
-            return True
-    return False
+    return id in user_by_id_by_guild_id[gid]
 
 
 def add_user(name, id, gid):
     """Add a new user object to the list."""
-    user_list[gid].append(User(name, id))
+    user_by_id_by_guild_id[gid][id] = User(name, id)
 
 
 def get_user(id, gid):
     """Return a User object given an id."""
-    for user in user_list[gid]:
-        if user.id == id:
-            return user
-    return None
+    return user_by_id_by_guild_id[gid].get(id, None)
 
 
 async def import_users_from_list(data, gid):
@@ -224,20 +217,21 @@ async def import_users_from_list(data, gid):
             _name, _ = _user.split('#', maxsplit=1)
             _msg = _entry[MSG]
             # _reactions = _entry[RCTN].strip('"') # throws OOB
-            if not id_in_user_list(_id, gid):
-                add_user(_name, _id, gid)
-            
-            if is_valid(_msg):
-                get_user(_id, gid).add(_msg)
+
+            get_or_create_user(gid, _id, _name).add(_msg)
         except Exception as e:
             print(e)
             print('line:', line)
             print('user:', _user)
 
 
+def get_or_create_user(gid, id: str, name: str):
+    return user_by_id_by_guild_id[gid].setdefault(id, User(name, id))
+
+
 async def create_user_models(gid):
     """Create text models for each existing user."""
-    for user in user_list[gid]:
+    for user in user_by_id_by_guild_id[gid].values():
         try:
             await user.create_models()
         except Exception as e:
@@ -288,11 +282,8 @@ async def import_usbot_user(gid):
         _name, _ = _user.split('#', maxsplit=1)
         _msg = _entry[MSG]
         # _reactions = _entry[RCTN].strip('"') # throws OOB
-        if not id_in_user_list(_id, gid):
-            add_user(_name, _id, gid)
-        
-        if is_valid(_msg):
-            get_user(_id, gid).add(_msg)
+
+        get_or_create_user(gid, _id, _name).add(_msg)
 
 
 
@@ -306,9 +297,9 @@ async def init(gids):
 async def process_guild_logs(gid):
     print('updating gid', gid)
     messages = await import_chat_logs(gid)
-    user_list[gid] = list()
+    user_by_id_by_guild_id[gid] = dict()
     await import_users_from_list(messages, gid)
     await import_usbot_user(gid)
     await create_user_models(gid)
-    print('done with markov for', gid, 'with', len(user_list[gid]), 'users')
+    print('done with markov for', gid, 'with', len(user_by_id_by_guild_id[gid]), 'users')
     

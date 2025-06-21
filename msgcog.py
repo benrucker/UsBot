@@ -9,7 +9,7 @@ import discord
 from discord.ext import commands
 
 import markov
-from dlogger import dlogger
+from dlogger import dlogger # type: ignore
 
 ATTEMPTS = 50
 
@@ -80,12 +80,17 @@ class MsgCog(commands.Cog):
             await self.send_error(ctx.channel, err_type='perms')
 
         username = self.name_from_command(name, ctx.guild.id)
-        success = markov.add_user_to_blacklist(username, ctx.guild.id)
-        msg_out = ''
-        if success:
-            msg_out = username + ' will no longer send messages here.'
+
+        if username is None:
+            msg_out = "Error: I couldn't find that user."
+            return
         else:
-            msg_out = username + ' could not be blacklisted or is already blacklisted.'
+            success = markov.add_user_to_blacklist(username, ctx.guild.id)
+            msg_out = ''
+            if success:
+                msg_out = username + ' will no longer send messages here.'
+            else:
+                msg_out = username + ' could not be blacklisted or is already blacklisted.'
         await ctx.message.channel.send(msg_out, allowed_mentions=discord.AllowedMentions(everyone=False, roles=False, users=False))
 
     @commands.command()
@@ -126,6 +131,10 @@ class MsgCog(commands.Cog):
 
     async def command_get_specified(self, ctx: commands.Context, name, num_tries=500, stupid=False):
         """Send a message based on a specific user."""
+        if ctx.guild is None:
+            await ctx.message.channel.send("Error: this command can only be used in a server.")
+            return
+
         msg = ''
         async with ctx.channel.typing():
             if not name:
